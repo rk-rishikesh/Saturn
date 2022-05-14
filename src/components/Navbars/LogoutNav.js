@@ -113,7 +113,19 @@ function NoLoginNav() {
                 </UncontrolledDropdown>
               </Nav>
               <Nav className="align-items-lg-center ml-lg-auto" navbar>
-    
+                <NavItem className="d-none d-lg-block ml-lg-4">
+                  <Button
+                    className="btn-neutral btn-icon"
+                    color="primary"
+                    type="button"
+                    onClick={logOut}
+                  >
+                    <span className="btn-inner--icon">
+                      <i className="fa fa-cloud-download mr-2" />
+                    </span>
+                    <span className="nav-link-inner--text ml-1">Logout</span>
+                  </Button>
+                </NavItem>
               </Nav>
             </UncontrolledCollapse>
           </Container>

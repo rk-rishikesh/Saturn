@@ -30,8 +30,9 @@ import {
 import classnames from "classnames";
 
 // core components
-import NoLoginNav from "components/Navbars/NoLoginNav.js";
+import LogoutNav from "components/Navbars/LogoutNav.js";
 import SimpleFooter from "components/Footers/SimpleFooter.js";
+import Login from "views/pages/Login.js";
 
 // wallet
 import Web3 from "web3";
@@ -459,9 +460,12 @@ function Profile() {
   };
 
   const [nftList, setNFTList] = useState([]);
+  const [nominatedList, setNominatedList] = useState([]);
+  const [inheritList, setInheritList] = useState([]);
 
   const [state, setToggleState] = useState(1);
   const [modal, setModalState] = useState(false);
+  const [network, setNetwork] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [nomineeAddress, setNomineeAddress] = useState("");
@@ -473,7 +477,8 @@ function Profile() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     // this.refs.main.scrollTop = 0;
-  }, [nftList]);
+  }, []);
+
   const {
     Moralis,
     authenticate,
@@ -488,6 +493,7 @@ function Profile() {
     isAuthenticating,
     enableWeb3,
   } = useMoralis();
+
   const { getNFTBalances, data, error, isLoading, isFetching } =
     useNFTBalances();
   const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
@@ -552,7 +558,6 @@ function Profile() {
 
     var provider = await web3Modal.connect();
     setProvider(provider);
-
     const web3 = new Web3(provider);
     const accounts = await web3.eth.getAccounts();
     console.log(accounts[0]);
@@ -564,10 +569,107 @@ function Profile() {
     web3Modal.off();
   };
 
+  const getUserEthereumNFT = async (count, addressArray) => {
+    setLoading(true);
+    setNFTList([]);
+    setInheritList([]);
+    setNominatedList([]);
+    var i = 0;
+    var j = 0;
+    for (i = 0; i < count; i++) {
+      console.log(addressArray[i]);
+      const ethereumNFT = await getNFTBalances({
+        params: { chain: "rinkeby", address: addressArray[i] },
+      });
+      console.log(ethereumNFT);
+      console.log(ethereumNFT.total);
+      var ethereumnftList = [];
+      for (j = 0; j < ethereumNFT.total; j++) {
+        console.log(ethereumNFT.result[j]);
+        ethereumnftList.push(ethereumNFT.result[j]);
+      }
+    }
+    setNFTList(ethereumnftList);
+    console.log(nftList);
+    setNetwork(1);
+    setLoading(false);
+  };
+
+  const getUserPolygonNFT = async (count, addressArray) => {
+    setLoading(true);
+    var i = 0;
+    var j = 0;
+    var k = 0;
+    var l = 0;
+
+    var polygonnftList = [];
+    var polygonNominatedList = [];
+    var polygonInheritList = [];
+
+    for (i = 0; i < count; i++) {
+      console.log(addressArray[i]);
+      const polygonNFT = await getNFTBalances({
+        params: { chain: "mumbai", address: addressArray[i] },
+      });
+      console.log(polygonNFT);
+      console.log(polygonNFT.total);
+
+      await Moralis.enableWeb3();
+      const web3 = new Web3(Moralis.provider);
+
+      const saturn = new web3.eth.Contract(saturnABI, contractAddressPolygon);
+      console.log(saturn);
+
+      const nominationCount = await saturn.methods.nominationIds().call();
+
+      for (j = 0; j < polygonNFT.total; j++) {
+        console.log(polygonNFT.result[j]);
+        polygonnftList.push(polygonNFT.result[j]);
+      }
+
+      for (k = 1; k <= nominationCount; k++) {
+        const nomination = await saturn.methods.nominations(k).call();
+        console.log(nomination);
+        console.log("HMMM" + addressArray[i]);
+        // if(nomination).nominatedBy == addressArray[i]
+        if (
+          nomination.nominatedBy.toUpperCase() == addressArray[i].toUpperCase()
+        ) {
+          polygonNominatedList.push(nomination);
+        }
+      }
+      console.log(polygonNominatedList);
+
+      for (l = 1; l <= nominationCount; l++) {
+        const nomination = await saturn.methods.nominations(l).call();
+        console.log(nomination);
+        // if(nomination).nominatedBy == addressArray[i]
+        console.log(addressArray[i]);
+        if (nomination.nominee.toUpperCase() == addressArray[i].toUpperCase()) {
+          polygonInheritList.push(nomination);
+          console.log(addressArray[i]);
+        }
+      }
+      console.log(polygonInheritList);
+    }
+
+    setNFTList(polygonnftList);
+    setInheritList(polygonInheritList);
+    setNominatedList(polygonNominatedList);
+    console.log(nftList);
+    console.log(nominatedList);
+    console.log(inheritList);
+    setNetwork(2);
+    setLoading(false);
+  };
+
   const getUserBSCNFT = async (count, addressArray) => {
     setLoading(true);
     var i = 0;
     var j = 0;
+    setNFTList([]);
+    setInheritList([]);
+    setNominatedList([]);
     for (i = 0; i < count; i++) {
       console.log(addressArray[i]);
       const bscNFTS = await getNFTBalances({
@@ -575,13 +677,41 @@ function Profile() {
       });
       console.log(bscNFTS);
       console.log(bscNFTS.total);
+      var bscnftList = [];
       for (j = 0; j < bscNFTS.total; j++) {
         console.log(bscNFTS.result[j]);
-        nftList.push(bscNFTS.result[j]);
+        bscnftList.push(bscNFTS.result[j]);
       }
     }
-    setNFTList((nftList) => nftList);
+    setNFTList(bscnftList);
+    console.log(bscnftList);
+    setNetwork(3);
+    setLoading(false);
+  };
+
+  const getUserAvalancheNFT = async (count, addressArray) => {
+    setLoading(true);
+    setNFTList([]);
+    setInheritList([]);
+    setNominatedList([]);
+    var i = 0;
+    var j = 0;
+    for (i = 0; i < count; i++) {
+      console.log(addressArray[i]);
+      const avalancheNFT = await getNFTBalances({
+        params: { chain: "avalanche testnet", address: addressArray[i] },
+      });
+      console.log(avalancheNFT);
+      console.log(avalancheNFT.total);
+      var avalanchenftList = [];
+      for (j = 0; j < avalancheNFT.total; j++) {
+        console.log(avalancheNFT.result[j]);
+        avalanchenftList.push(avalancheNFT.result[j]);
+      }
+    }
+    setNFTList(avalanchenftList);
     console.log(nftList);
+    setNetwork(4);
     setLoading(false);
   };
 
@@ -590,21 +720,36 @@ function Profile() {
     console.log(tokenAddress);
     console.log(tokenId);
     console.log(nomineeAddress);
-    const web3 = new Web3(provider);
+    const x = await Moralis.enableWeb3();
+    const web3 = new Web3(Moralis.provider);
     const nft = new web3.eth.Contract(tokenABI, tokenAddress);
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts[0]);
+    setAccount(accounts[0]);
     console.log(nft);
     console.log(userAddress);
-    if(owner == userAddress) {
-      nft.methods
-      .setApprovalForAll(contractAddressBSC, true)
+    console.log(owner);
+
+    var saturnAddress;
+    if (network == 1) {
+      saturnAddress = contractAddressEthereum;
+    } else if (network == 2) {
+      saturnAddress = contractAddressPolygon;
+    } else if (network == 3) {
+      saturnAddress = contractAddressBSC;
+    } else if (network == 4) {
+      saturnAddress = contractAddressAvalanche;
+    } else {
+      alert("Gadbad");
+    }
+
+    nft.methods
+      .setApprovalForAll(saturnAddress, true)
       .send({ from: owner })
       .on("transactionHash", (hash) => {
         console.log(hash);
       });
-    }else {
-      alert("Connect to : " + owner);
-    }
-    
+
     setLoading(false);
   };
 
@@ -613,21 +758,126 @@ function Profile() {
     console.log(tokenAddress);
     console.log(tokenId);
     console.log(nomineeAddress);
-    const web3 = new Web3(provider);
-    const nft = new web3.eth.Contract(tokenABI, tokenAddress);
-    console.log(nft);
-    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
-    console.log(saturn);
+    await Moralis.enableWeb3();
+    const web3 = new Web3(Moralis.provider);
+
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts[0]);
+    setAccount(accounts[0]);
+
+    var saturn;
+    if (network == 1) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressEthereum);
+      console.log(saturn);
+    } else if (network == 2) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressPolygon);
+      console.log(saturn);
+    } else if (network == 3) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+      console.log(saturn);
+    } else if (network == 4) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressAvalanche);
+      console.log(saturn);
+    } else {
+      alert("Gadbad");
+    }
+
+    console.log(nomineeAddress);
+    saturn.methods
+      .Nominate(tokenAddress, tokenId, nomineeAddress)
+      .send({ from: accounts[0] })
+      .on("transactionHash", (hash) => {
+        console.log(hash);
+      });
     setLoading(false);
   };
 
-  if (loading) {
-    return <div>Loading ...</div>;
+  const initiateFetchRequest = async (nominationID) => {
+    setLoading(true);
+    console.log(nominationID);
+
+    await Moralis.enableWeb3();
+    const web3 = new Web3(Moralis.provider);
+
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts[0]);
+    setAccount(accounts[0]);
+
+    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+    console.log(saturn);
+
+    saturn.methods
+      .initiateFetchRequest(nominationID)
+      .send({ from: accounts[0] })
+      .on("transactionHash", (hash) => {
+        console.log(hash);
+        // SEND EMAIL
+      });
+    setLoading(false);
+  };
+
+  const rejectFetchRequest = async (nominationID) => {
+    setLoading(true);
+    console.log(nominationID);
+
+    await Moralis.enableWeb3();
+    const web3 = new Web3(Moralis.provider);
+
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts[0]);
+    setAccount(accounts[0]);
+
+    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+    console.log(saturn);
+
+    saturn.methods
+      .rejectFetchRequest(nominationID)
+      .send({ from: accounts[0] })
+      .on("transactionHash", (hash) => {
+        console.log(hash);
+      });
+    setLoading(false);
+  };
+
+  const executeTransfer = async (nominationID) => {
+    setLoading(true);
+    console.log(nominationID);
+
+    await Moralis.enableWeb3();
+    const web3 = new Web3(Moralis.provider);
+
+    const accounts = await web3.eth.getAccounts();
+    console.log(accounts[0]);
+    setAccount(accounts[0]);
+
+    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+    console.log(saturn);
+
+    saturn.methods
+      .executeTransfer(nominationID)
+      .send({ from: accounts[0] })
+      .on("transactionHash", (hash) => {
+        console.log(hash);
+      });
+    setLoading(false);
+  };
+
+  if (!isAuthenticated) {
+    return <Login />;
+  } else if (loading) {
+    return (
+      <div>
+        <img
+          style={{ marginLeft: "25%", marginTop: "8%" }}
+          src="https://www.faiver.io/static/media/loader.58607b10.gif"
+        />
+      </div>
+    );
   } else {
     return (
       <>
         {/* IF USER IS LOGGED IN THEN THIS PAGE ELSE LOGIN PAGE */}
-        <NoLoginNav />
+        <LogoutNav />
         <main className="profile-page" useref="main">
           <section className="section-profile-cover section-shaped my-0">
             {/* Circles background */}
@@ -676,17 +926,17 @@ function Profile() {
                           onClick={connectWallet}
                           size="sm"
                         >
-                          Connect
+                          Add Account
                         </Button>
                         <UncontrolledDropdown size="sm">
                           <DropdownToggle caret color="secondary">
-                            Regular
+                            Select Chain
                           </DropdownToggle>
                           <DropdownMenu>
                             <DropdownItem
                               href="#pablo"
                               onClick={() =>
-                                getUserBSCNFT(1, user.get("accounts"))
+                                getUserEthereumNFT(1, user.get("accounts"))
                               }
                             >
                               Ethereum
@@ -694,7 +944,10 @@ function Profile() {
                             <DropdownItem
                               href="#pablo"
                               onClick={() =>
-                                getUserBSCNFT(1, user.get("accounts"))
+                                getUserPolygonNFT(
+                                  user.get("accounts").length,
+                                  user.get("accounts")
+                                )
                               }
                             >
                               Polygon
@@ -702,7 +955,10 @@ function Profile() {
                             <DropdownItem
                               href="#pablo"
                               onClick={() =>
-                                getUserBSCNFT(1, user.get("accounts"))
+                                getUserAvalancheNFT(
+                                  user.get("accounts").length,
+                                  user.get("accounts")
+                                )
                               }
                             >
                               Avalanche
@@ -715,14 +971,6 @@ function Profile() {
                             >
                               BSC
                             </DropdownItem>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={() =>
-                                getUserBSCNFT(1, user.get("accounts"))
-                              }
-                            >
-                              Avalanche
-                            </DropdownItem>
                           </DropdownMenu>
                         </UncontrolledDropdown>
                       </div>
@@ -731,28 +979,31 @@ function Profile() {
                       <div className="card-profile-stats d-flex justify-content-center">
                         <div>
                           <span className="heading">{nftList.length}</span>
-                          <span className="description">NFTS</span>
+                          <span className="description">NFTs</span>
                         </div>
                         <div>
-                          <span className="heading">10</span>
-                          <span className="description">Nominees</span>
+                          <span className="heading">
+                            {nominatedList.length}
+                          </span>
+                          <span className="description">Nomination</span>
+                        </div>
+                        <div>
+                          <span className="heading">{inheritList.length}</span>
+                          <span className="description">To Inherit</span>
                         </div>
                       </div>
                     </Col>
                   </Row>
-                  <div className="text-center mt-5">
-                    {userError && <p>{userError.message}</p>}
+                  {/* <div className="text-center mt-5">
+                    {/* {userError && <p>{userError.message}</p>}
                     <pre>{JSON.stringify(user)}</pre>
-                    {user && console.log(user.get("username"))}
-                  </div>
+                    {user && console.log(user.get("username"))} 
+                  </div> */}
 
                   <div className="card-profile-stats d-flex justify-content-center">
                     <div>
                       <span className="heading">
                         {user && user.get("username")}
-                      </span>
-                      <span className="heading">
-                        {user && user.toJSON().accounts[3]}
                       </span>
                     </div>
                   </div>
@@ -836,8 +1087,16 @@ function Profile() {
                                                   src={require("assets/img/theme/img-1-1200x1000.jpg")}
                                                   top
                                                 />
-                                                <CardBody className="py-5">
-                                                  {nftList[key].token_address}
+
+                                                <CardBody>
+                                                  <h6>Contract Address</h6>
+                                                  <a>
+                                                    {nftList[key].token_address}
+                                                  </a>
+                                                  <h6>Name</h6>{" "}
+                                                  <a>{nftList[key].name}</a>
+                                                  <h6>Owner</h6>{" "}
+                                                  <a>{nftList[key].owner_of}</a>
                                                 </CardBody>
                                                 {/* Form Modal */}
 
@@ -944,21 +1203,139 @@ function Profile() {
                         </div>
                       </TabPane>
                       <TabPane tabId="iconTabs2">
-                        <p className="description">
-                          Cosby sweater eu banh mi, qui irure terry richardson
-                          ex squid. Aliquip placeat salvia cillum iphone. Seitan
-                          aliquip quis cardigan american apparel, butcher
-                          voluptate nisi qui.
-                        </p>
+                        <div className="mt-1 py-4 text-center">
+                          <Row className="justify-content-center">
+                            <Col lg="9">
+                              {nominatedList.length > 0 && (
+                                <section>
+                                  <Container>
+                                    <Row className="justify-content-center">
+                                      <Col lg="12">
+                                        <Row className="row-grid">
+                                          {nominatedList.map((e, key) => (
+                                            <Col lg="6">
+                                              <br />
+                                              <br />
+                                              <Card
+                                                className="card-lift--hover shadow border-0"
+                                                onClick={console.log(
+                                                  nominatedList[key]
+                                                )}
+                                              >
+                                                <CardImg
+                                                  alt="..."
+                                                  src={require("assets/img/theme/img-1-1200x1000.jpg")}
+                                                  top
+                                                />
+
+                                                <CardBody>
+                                                  <h6>Nominee Address</h6>
+                                                  <a>
+                                                    {
+                                                      nominatedList[key]
+                                                        .nominee
+                                                    }
+                                                  </a>
+                                                  
+                                                  <h6>Fetch Status</h6>
+                                                  <a>
+                                                    {
+                                                      nominatedList[key]
+                                                        .fetchRequestInitiated.toString().toUpperCase()
+                                                    }
+                                                  </a>
+                                                  
+                                                </CardBody>
+
+                                                {nominatedList[key]
+                                                        .fetchRequestInitiated && <Button
+                                                        block
+                                                        color="default"
+                                                        type="button"
+                                                        className="mr-4"
+                                                        // onClick={toggleModal}
+                                                      >
+                                                        Reject Fetch Request
+                                                      </Button>}
+                                              </Card>
+                                            </Col>
+                                          ))}
+                                        </Row>
+                                      </Col>
+                                    </Row>
+                                  </Container>
+                                </section>
+                              )}
+                            </Col>
+                          </Row>
+                        </div>
                       </TabPane>
                       <TabPane tabId="iconTabs3">
-                        <p className="description">
-                          Raw denim you probably haven't heard of them jean
-                          shorts Austin. Nesciunt tofu stumptown aliqua, retro
-                          synth master cleanse. Mustache cliche tempor,
-                          williamsburg carles vegan helvetica. Reprehenderit
-                          butcher retro keffiyeh dreamcatcher synth.
-                        </p>
+                        <div className="mt-1 py-4 text-center">
+                          <Row className="justify-content-center">
+                            <Col lg="9">
+                              {inheritList.length > 0 && (
+                                <section>
+                                  <Container>
+                                    <Row className="justify-content-center">
+                                      <Col lg="12">
+                                        <Row className="row-grid">
+                                          {inheritList.map((e, key) => (
+                                            <Col lg="6">
+                                              <br />
+                                              <br />
+                                              <Card
+                                                className="card-lift--hover shadow border-0"
+                                                onClick={console.log(
+                                                  inheritList[key].tokenAddress
+                                                )}
+                                              >
+                                                <CardImg
+                                                  alt="..."
+                                                  src={require("assets/img/theme/img-1-1200x1000.jpg")}
+                                                  top
+                                                />
+
+                                                <CardBody>
+                                                  <h6>Nominee Address</h6>
+                                                  <a>
+                                                    {
+                                                      inheritList[key]
+                                                        .nominee
+                                                    }
+                                                  </a>
+                                                  <h6>Fetch Status</h6>{" "}
+                                                  <a>
+                                                    {
+                                                      inheritList[key]
+                                                        .fetchRequestInitiated.toString().toUpperCase()
+                                                    }
+                                                  </a>
+                                                </CardBody>
+                                                {/* Form Modal */}
+                                                {inheritList[key]
+                                                        .fetchRequestInitiated && <Button
+                                                        block
+                                                        color="default"
+                                                        type="button"
+                                                        className="mr-4"
+                                                        // onClick={toggleModal}
+                                                      >
+                                                        Claim NFT
+                                                      </Button>}
+                                                
+                                              </Card>
+                                            </Col>
+                                          ))}
+                                        </Row>
+                                      </Col>
+                                    </Row>
+                                  </Container>
+                                </section>
+                              )}
+                            </Col>
+                          </Row>
+                        </div>
                       </TabPane>
                     </TabContent>
                   </Col>

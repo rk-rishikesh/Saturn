@@ -39,10 +39,22 @@ function Login() {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    login(username, password);
+    
+
+    if (!isAuthenticated) {
+
+      await login(username, password)
+        .then(function (user) {
+          console.log("logged in user:", user);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
     console.log(username)
+    console.log("Login Successull");
   }
   
     return (
