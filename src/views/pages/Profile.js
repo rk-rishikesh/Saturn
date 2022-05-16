@@ -44,8 +44,14 @@ import Torus from "@toruslabs/torus-embed";
 import Portis from "@portis/web3";
 import Authereum from "authereum";
 
-import { useMoralis } from "react-moralis";
-import { useNFTBalances } from "react-moralis";
+import {
+  useMoralis,
+  useMoralisCloudFunction,
+  useNFTBalances,
+} from "react-moralis";
+
+// Mail
+import emailjs from '@emailjs/browser';
 
 function Profile() {
   const contractAddressEthereum = "";
@@ -496,6 +502,8 @@ function Profile() {
 
   const { getNFTBalances, data, error, isLoading, isFetching } =
     useNFTBalances();
+
+
   const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
 
   const providerOptions = {
@@ -731,6 +739,7 @@ function Profile() {
     console.log(owner);
 
     var saturnAddress;
+    console.log(network);
     if (network == 1) {
       saturnAddress = contractAddressEthereum;
     } else if (network == 2) {
@@ -743,18 +752,22 @@ function Profile() {
       alert("Gadbad");
     }
 
+    console.log(saturnAddress);
+
     nft.methods
       .setApprovalForAll(saturnAddress, true)
       .send({ from: owner })
       .on("transactionHash", (hash) => {
         console.log(hash);
-      });
 
-    setLoading(false);
+        setLoading(false);
+      });
   };
+
 
   const addNominee = async (tokenAddress, tokenId) => {
     setLoading(true);
+
     console.log(tokenAddress);
     console.log(tokenId);
     console.log(nomineeAddress);
@@ -788,7 +801,10 @@ function Profile() {
       .send({ from: accounts[0] })
       .on("transactionHash", (hash) => {
         console.log(hash);
+
+        setLoading(false);
       });
+
     setLoading(false);
   };
 
@@ -803,15 +819,42 @@ function Profile() {
     console.log(accounts[0]);
     setAccount(accounts[0]);
 
-    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
-    console.log(saturn);
+    var saturn;
+    if (network == 1) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressEthereum);
+      console.log(saturn);
+    } else if (network == 2) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressPolygon);
+      console.log(saturn);
+    } else if (network == 3) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+      console.log(saturn);
+    } else if (network == 4) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressAvalanche);
+      console.log(saturn);
+    } else {
+      alert("Gadbad");
+    }
+
+    var param = {
+      to:"kalerv@rknec.edu"
+    }
 
     saturn.methods
       .initiateFetchRequest(nominationID)
       .send({ from: accounts[0] })
       .on("transactionHash", (hash) => {
         console.log(hash);
-        // SEND EMAIL
+        emailjs
+        .send("service_f9b4wm9", "template_ex0sd98", param, "eZXFYd0dvz7-pRCn3")
+        .then(
+          (result) => {
+            alert("Fetch Request Initiated", result.text);
+          },
+          (error) => {
+            alert("An error occurred, Please try again", error.text);
+          }
+        );
       });
     setLoading(false);
   };
@@ -827,8 +870,22 @@ function Profile() {
     console.log(accounts[0]);
     setAccount(accounts[0]);
 
-    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
-    console.log(saturn);
+    var saturn;
+    if (network == 1) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressEthereum);
+      console.log(saturn);
+    } else if (network == 2) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressPolygon);
+      console.log(saturn);
+    } else if (network == 3) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+      console.log(saturn);
+    } else if (network == 4) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressAvalanche);
+      console.log(saturn);
+    } else {
+      alert("Gadbad");
+    }
 
     saturn.methods
       .rejectFetchRequest(nominationID)
@@ -850,8 +907,22 @@ function Profile() {
     console.log(accounts[0]);
     setAccount(accounts[0]);
 
-    const saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
-    console.log(saturn);
+    var saturn;
+    if (network == 1) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressEthereum);
+      console.log(saturn);
+    } else if (network == 2) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressPolygon);
+      console.log(saturn);
+    } else if (network == 3) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressBSC);
+      console.log(saturn);
+    } else if (network == 4) {
+      saturn = new web3.eth.Contract(saturnABI, contractAddressAvalanche);
+      console.log(saturn);
+    } else {
+      alert("Gadbad");
+    }
 
     saturn.methods
       .executeTransfer(nominationID)
@@ -862,15 +933,24 @@ function Profile() {
     setLoading(false);
   };
 
+  const divStyle = {
+    width: "100%",
+    height: "826px",
+    backgroundImage: `url(https://i.pinimg.com/originals/cc/b0/1c/ccb01c058068c3e2a09c9fb751299297.gif)`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+  };
+
   if (!isAuthenticated) {
     return <Login />;
   } else if (loading) {
     return (
-      <div>
-        <img
-          style={{ marginLeft: "25%", marginTop: "8%" }}
-          src="https://www.faiver.io/static/media/loader.58607b10.gif"
-        />
+      <div style={divStyle}>
+        {/* <img
+        
+          // style={{ marginLeft: "25%", marginTop: "8%" }}
+          //src="https://www.faiver.io/static/media/loader.58607b10.gif"
+        /> */}
       </div>
     );
   } else {
@@ -910,7 +990,7 @@ function Profile() {
                           <img
                             alt="..."
                             className="rounded-circle"
-                            src={require("assets/img/theme/team-4-800x800.jpg")}
+                            src={require("assets/img/theme/profilePic.webp")}
                           />
                         </a>
                       </div>
@@ -1155,7 +1235,11 @@ function Profile() {
                                                               className="my-4"
                                                               color="primary"
                                                               type="button"
-                                                              onClick={() =>
+                                                              onClick={() => {
+                                                                console.log(
+                                                                  nftList[key]
+                                                                    .owner_of
+                                                                );
                                                                 approveNFT(
                                                                   nftList[key]
                                                                     .token_address,
@@ -1163,8 +1247,8 @@ function Profile() {
                                                                     .token_id,
                                                                   nftList[key]
                                                                     .owner_of
-                                                                )
-                                                              }
+                                                                );
+                                                              }}
                                                             >
                                                               Approve NFT
                                                             </Button>
@@ -1231,32 +1315,43 @@ function Profile() {
                                                 <CardBody>
                                                   <h6>Nominee Address</h6>
                                                   <a>
-                                                    {
-                                                      nominatedList[key]
-                                                        .nominee
-                                                    }
+                                                    {nominatedList[key].nominee}
                                                   </a>
-                                                  
-                                                  <h6>Fetch Status</h6>
+                                                  <h6>Owner Address</h6>
                                                   <a>
                                                     {
                                                       nominatedList[key]
-                                                        .fetchRequestInitiated.toString().toUpperCase()
+                                                        .nominatedBy
                                                     }
                                                   </a>
-                                                  
+
+                                                  <h6>Fetch Status</h6>
+                                                  <a>
+                                                    {nominatedList[
+                                                      key
+                                                    ].fetchRequestInitiated
+                                                      .toString()
+                                                      .toUpperCase()}
+                                                  </a>
                                                 </CardBody>
 
                                                 {nominatedList[key]
-                                                        .fetchRequestInitiated && <Button
-                                                        block
-                                                        color="default"
-                                                        type="button"
-                                                        className="mr-4"
-                                                        // onClick={toggleModal}
-                                                      >
-                                                        Reject Fetch Request
-                                                      </Button>}
+                                                  .fetchRequestInitiated && (
+                                                  <Button
+                                                    block
+                                                    color="default"
+                                                    type="button"
+                                                    className="mr-4"
+                                                    onClick={() =>
+                                                      rejectFetchRequest(
+                                                        inheritList[key]
+                                                          .nominationId
+                                                      )
+                                                    }
+                                                  >
+                                                    Reject Fetch Request
+                                                  </Button>
+                                                )}
                                               </Card>
                                             </Col>
                                           ))}
@@ -1299,31 +1394,52 @@ function Profile() {
                                                 <CardBody>
                                                   <h6>Nominee Address</h6>
                                                   <a>
-                                                    {
-                                                      inheritList[key]
-                                                        .nominee
-                                                    }
+                                                    {inheritList[key].nominee}
                                                   </a>
                                                   <h6>Fetch Status</h6>{" "}
                                                   <a>
-                                                    {
-                                                      inheritList[key]
-                                                        .fetchRequestInitiated.toString().toUpperCase()
-                                                    }
+                                                    {inheritList[
+                                                      key
+                                                    ].fetchRequestInitiated
+                                                      .toString()
+                                                      .toUpperCase()}
                                                   </a>
                                                 </CardBody>
-                                                {/* Form Modal */}
+                                                {!inheritList[key]
+                                                  .fetchRequestInitiated && (
+                                                  <Button
+                                                    block
+                                                    color="default"
+                                                    type="button"
+                                                    className="mr-4"
+                                                    onClick={() =>
+                                                      initiateFetchRequest(
+                                                        inheritList[key]
+                                                          .nominationId
+                                                      )
+                                                    }
+                                                  >
+                                                    Init Fetch Request
+                                                  </Button>
+                                                )}
+
                                                 {inheritList[key]
-                                                        .fetchRequestInitiated && <Button
-                                                        block
-                                                        color="default"
-                                                        type="button"
-                                                        className="mr-4"
-                                                        // onClick={toggleModal}
-                                                      >
-                                                        Claim NFT
-                                                      </Button>}
-                                                
+                                                  .fetchRequestInitiated && (
+                                                  <Button
+                                                    block
+                                                    color="default"
+                                                    type="button"
+                                                    className="mr-4"
+                                                    onClick={() =>
+                                                      executeTransfer(
+                                                        inheritList[key]
+                                                          .nominationId
+                                                      )
+                                                    }
+                                                  >
+                                                    Claim NFT
+                                                  </Button>
+                                                )}
                                               </Card>
                                             </Col>
                                           ))}

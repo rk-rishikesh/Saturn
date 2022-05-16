@@ -56,7 +56,7 @@ class Landing extends React.Component {
                   <Row>
                     <Col lg="6">
                       <h1 className="display-3 text-white">
-                      <span>Safeguard All The Unique & Rare NFTs</span>
+                        <span>Safeguard All The Unique & Rare NFTs</span>
                       </h1>
                       <p className="lead text-white">
                         Pending Tasks - Authenticate and login with moralis -
@@ -105,9 +105,8 @@ class Landing extends React.Component {
                     </div>
                     <h3>Awesome features</h3>
                     <p>
-                      The kit comes with three pre-built pages to help you get
-                      started faster. You can change the text and images and
-                      you're good to go.
+                      The Saturn protocol is aimed towards solving the real
+                      world problem in NFT space.
                     </p>
                     <ul className="list-unstyled mt-5">
                       <li className="py-2">
@@ -122,7 +121,7 @@ class Landing extends React.Component {
                           </div>
                           <div>
                             <h6 className="mb-0">
-                              Carefully crafted components
+                              Email alerts powered by Moralis
                             </h6>
                           </div>
                         </div>
@@ -138,7 +137,10 @@ class Landing extends React.Component {
                             </Badge>
                           </div>
                           <div>
-                            <h6 className="mb-0">Amazing page examples</h6>
+                            <h6 className="mb-0">
+                              Automated Smart Contract powered by Chainlink
+                              Keepers
+                            </h6>
                           </div>
                         </div>
                       </li>
@@ -154,83 +156,13 @@ class Landing extends React.Component {
                           </div>
                           <div>
                             <h6 className="mb-0">
-                              Super friendly support team
+                              Fastest and complete Decentralized way to transfer
+                              NFTs to their successors
                             </h6>
                           </div>
                         </div>
                       </li>
                     </ul>
-                  </div>
-                </Col>
-              </Row>
-            </Container>
-          </section>
-          <section className="section bg-secondary">
-            <Container>
-              <Row className="row-grid align-items-center">
-                <Col md="6">
-                  <Card className="bg-default shadow border-0">
-                    <CardImg
-                      alt="..."
-                      src={require("assets/img/theme/img-1-1200x1000.jpg")}
-                      top
-                    />
-                    <blockquote className="card-blockquote">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="svg-bg"
-                        preserveAspectRatio="none"
-                        viewBox="0 0 583 95"
-                      >
-                        <polygon
-                          className="fill-default"
-                          points="0,52 583,95 0,95"
-                        />
-                        <polygon
-                          className="fill-default"
-                          opacity=".2"
-                          points="0,42 583,95 683,0 0,95"
-                        />
-                      </svg>
-                      <h4 className="display-3 font-weight-bold text-white">
-                        Design System
-                      </h4>
-                      <p className="lead text-italic text-white">
-                        The Arctic Ocean freezes every winter and much of the
-                        sea-ice then thaws every summer, and that process will
-                        continue whatever happens.
-                      </p>
-                    </blockquote>
-                  </Card>
-                </Col>
-                <Col md="6">
-                  <div className="pl-md-5">
-                    <div className="icon icon-lg icon-shape icon-shape-warning shadow rounded-circle mb-5">
-                      <i className="ni ni-settings" />
-                    </div>
-                    <h3>Our customers</h3>
-                    <p className="lead">
-                      Don't let your uses guess by attaching tooltips and
-                      popoves to any element. Just make sure you enable them
-                      first via JavaScript.
-                    </p>
-                    <p>
-                      The kit comes with three pre-built pages to help you get
-                      started faster. You can change the text and images and
-                      you're good to go.
-                    </p>
-                    <p>
-                      The kit comes with three pre-built pages to help you get
-                      started faster. You can change the text and images and
-                      you're good to go.
-                    </p>
-                    <a
-                      className="font-weight-bold text-warning mt-5"
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      A beautiful UI Kit for impactful websites
-                    </a>
                   </div>
                 </Col>
               </Row>
@@ -260,9 +192,9 @@ class Landing extends React.Component {
                         <div className="pl-4">
                           <h5 className="title text-pink">Nominate</h5>
                           <p>
-                            The owner of the NFT can Nominate his/her 
-                            successor to whom the NFT would be transferd in the event of
-                            death.
+                            The owner of the NFT can Nominate his/her successor
+                            to whom the NFT would be transfered in the event of
+                            death of the owner
                           </p>
                         </div>
                       </div>
@@ -278,11 +210,11 @@ class Landing extends React.Component {
                         </div>
                         <div className="pl-4">
                           <h5 className="title text-success">
-                            Initate Fetch Request 
+                            Initate Fetch Request
                           </h5>
                           <p>
-                            The nominee of the NFT can instantiate the fetch request
-
+                            The nominee of the NFT can instantiate the fetch
+                            request
                           </p>
                         </div>
                       </div>
@@ -297,11 +229,11 @@ class Landing extends React.Component {
                           </div>
                         </div>
                         <div className="pl-4">
-                          <h5 className="title text-warning">
-                            Claim NFT
-                          </h5>
+                          <h5 className="title text-warning">Claim NFT</h5>
                           <p>
-                            After the fetching period is completed, the nominee can now claim the NFT and become the new owner
+                            After the fetching period is completed, the nominee
+                            can now claim the NFT and become the new owner of
+                            the NFT
                           </p>
                         </div>
                       </div>
@@ -436,7 +368,8 @@ class Landing extends React.Component {
                   <Row className="align-items-center">
                     <Col lg="8">
                       <h3 className="text-white">
-                        We made the transition of your NFTs to your successors easier.
+                        We made the transition of your NFTs to your successors
+                        easier.
                       </h3>
                     </Col>
                     <Col className="ml-lg-auto" lg="2">
