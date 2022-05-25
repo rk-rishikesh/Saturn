@@ -54,10 +54,10 @@ import {
 import emailjs from '@emailjs/browser';
 
 function Profile() {
-  const contractAddressEthereum = "";
+  const contractAddressEthereum = "0x4bFa92483a42692B3e64B6cD0b85886b67114656";
   const contractAddressPolygon = "0x5bedE0f54C46cA01DE1C6DAE862753973025D67A";
   const contractAddressBSC = "0x4063dC37411a57D4c87599128EcAE5ea132d3594";
-  const contractAddressAvalanche = "";
+  const contractAddressAvalanche = "0x7BfDea4Cfb68286dE27d339F0eb6B9411d398287";
   const saturnABI = [
     {
       inputs: [
@@ -562,19 +562,18 @@ function Profile() {
 
   const connectWallet = async () => {
     setLoading(true);
-    web3Modal.clearCachedProvider();
+
 
     var provider = await web3Modal.connect();
+    console.log(provider);
     setProvider(provider);
     const web3 = new Web3(provider);
     const accounts = await web3.eth.getAccounts();
     console.log(accounts[0]);
     setAccount(accounts[0]);
-    enableWeb3({ onComplete: () => Moralis.link(accounts[0]) });
-
-    setLoading(false);
-    web3Modal.clearCachedProvider();
-    web3Modal.off();
+    const y = enableWeb3({ onComplete: () => Moralis.link(accounts[0]) });
+    console.log(y);
+    setLoading(false);    
   };
 
   const getUserEthereumNFT = async (count, addressArray) => {
@@ -704,6 +703,13 @@ function Profile() {
     setNominatedList([]);
     var i = 0;
     var j = 0;
+    var k = 0;
+    var l = 0;
+
+    var avalanchenftList = [];
+    var avalancheNominatedList = [];
+    var avalancheInheritList = [];
+
     for (i = 0; i < count; i++) {
       console.log(addressArray[i]);
       const avalancheNFT = await getNFTBalances({
@@ -712,13 +718,50 @@ function Profile() {
       console.log(avalancheNFT);
       console.log(avalancheNFT.total);
       var avalanchenftList = [];
+      await Moralis.enableWeb3();
+      const web3 = new Web3(Moralis.provider);
+
+      const saturn = new web3.eth.Contract(saturnABI, contractAddressAvalanche);
+      console.log(saturn);
+
+      const nominationCount = await saturn.methods.nominationIds().call();
+
       for (j = 0; j < avalancheNFT.total; j++) {
         console.log(avalancheNFT.result[j]);
         avalanchenftList.push(avalancheNFT.result[j]);
       }
+
+      for (k = 1; k <= nominationCount; k++) {
+        const nomination = await saturn.methods.nominations(k).call();
+        console.log(nomination);
+        console.log("HMMM" + addressArray[i]);
+        // if(nomination).nominatedBy == addressArray[i]
+        if (
+          nomination.nominatedBy.toUpperCase() == addressArray[i].toUpperCase()
+        ) {
+          avalancheNominatedList.push(nomination);
+        }
+      }
+      console.log(avalancheNominatedList);
+
+      for (l = 1; l <= nominationCount; l++) {
+        const nomination = await saturn.methods.nominations(l).call();
+        console.log(nomination);
+        // if(nomination).nominatedBy == addressArray[i]
+        console.log(addressArray[i]);
+        if (nomination.nominee.toUpperCase() == addressArray[i].toUpperCase()) {
+          avalancheInheritList.push(nomination);
+          console.log(addressArray[i]);
+        }
+      }
+      console.log(avalancheInheritList);
     }
     setNFTList(avalanchenftList);
+    setInheritList(avalancheInheritList);
+    setNominatedList(avalancheNominatedList);
     console.log(nftList);
+    console.log(nominatedList);
+    console.log(inheritList);
     setNetwork(4);
     setLoading(false);
   };
@@ -1158,14 +1201,17 @@ function Profile() {
                                               <br />
                                               <Card
                                                 className="card-lift--hover shadow border-0"
+                                                key={key}
                                                 onClick={console.log(
                                                   nftList[key].owner_of
                                                 )}
                                               >
                                                 <CardImg
                                                   alt="..."
-                                                  src={require("assets/img/theme/img-1-1200x1000.jpg")}
+                                                  
+                                                  src={`${nftList[key].token_uri}`}
                                                   top
+                                                  
                                                 />
 
                                                 <CardBody>
@@ -1186,6 +1232,7 @@ function Profile() {
                                                   type="button"
                                                   className="mr-4"
                                                   onClick={toggleModal}
+                                              
                                                 >
                                                   Assign Nominee
                                                 </Button>
@@ -1194,6 +1241,7 @@ function Profile() {
                                                   size="sm"
                                                   isOpen={modal}
                                                   toggle={toggleModal}
+                                                  key={key}
                                                 >
                                                   <div className="modal-body p-0">
                                                     <Card className="bg-secondary shadow border-0">
@@ -1240,6 +1288,7 @@ function Profile() {
                                                                   nftList[key]
                                                                     .owner_of
                                                                 );
+                                                                console.log(e)
                                                                 approveNFT(
                                                                   nftList[key]
                                                                     .token_address,
@@ -1308,7 +1357,7 @@ function Profile() {
                                               >
                                                 <CardImg
                                                   alt="..."
-                                                  src={require("assets/img/theme/img-1-1200x1000.jpg")}
+                                                  src={`https://bafybeibsnz222dyn7m4zz6ytzhpxdul45s2ndj7fn2q5onxxrrnj7d32oi.ipfs.nftstorage.link/`}
                                                   top
                                                 />
 
@@ -1387,7 +1436,7 @@ function Profile() {
                                               >
                                                 <CardImg
                                                   alt="..."
-                                                  src={require("assets/img/theme/img-1-1200x1000.jpg")}
+                                                  src={`https://bafybeibsnz222dyn7m4zz6ytzhpxdul45s2ndj7fn2q5onxxrrnj7d32oi.ipfs.nftstorage.link/`}
                                                   top
                                                 />
 

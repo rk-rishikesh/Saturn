@@ -39,7 +39,7 @@ class Landing extends React.Component {
         <main ref="main">
           <div className="position-relative">
             {/* shape Hero */}
-            <section className="section section-lg section-shaped pb-250">
+            <section className="section section-lg section-shaped pb-80">
               <div className="shape shape-style-1 shape-default">
                 <span />
                 <span />
@@ -54,16 +54,15 @@ class Landing extends React.Component {
               <Container className="py-lg-md d-flex">
                 <div className="col px-0">
                   <Row>
-                    <Col lg="6">
+                    <Col lg="8">
+                    <h1 className="display-3 text-white">
+                        <span>‎</span>
+                      </h1>
                       <h1 className="display-3 text-white">
                         <span>Safeguard All The Unique & Rare NFTs</span>
                       </h1>
                       <p className="lead text-white">
-                        Pending Tasks - Authenticate and login with moralis -
-                        Wallet connect improvement - In Profile userdashboard
-                        and user details needs to be sexy - Mails on event of
-                        NFT transfer, NFT fetch request initialized etc - NFT
-                        contract
+                      Saturn is a protocol which helps the NFT owners to set a nominee for their NFTs. In the event of death of the original NFT owner, the NFTs would be transferred to the particular nominee in a complete decentralized manner.
                       </p>
                     </Col>
                   </Row>
